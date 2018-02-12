@@ -121,6 +121,23 @@ app.post('/items', (req, res) => {
     });
 });
 
+//REQUEST to borrow and item
+app.patch('/items', (req, res) => {
+  const { borrowerid, itemid } = req.body;
+  const query = {
+    text: 'UPDATE items SET borrowerid=$1 WHERE itemid=$2 RETURNING *',
+    values: [borrowerid, itemid]
+  };
+  return pool
+    .query(query)
+    .then(response => {
+      res.send(response.rows[0]);
+    })
+    .catch(err => {
+      res.status(400).send(err);
+    });
+});
+
 //Setting up our Express server connection, this port is different since this is our server not PG database
 app.listen(3000, () => {
   console.log('Live on 3000');
